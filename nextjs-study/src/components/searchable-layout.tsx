@@ -1,17 +1,23 @@
 import { useRouter } from "next/router";
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import {useState} from "react";
 
 
 export default function SearchableLayout ({children}: {children: ReactNode}) {
     const [search, setSearch] = useState("");
     const router = useRouter();
+    const { q } = router.query;
+
+    useEffect(() => {
+        setSearch(q as string || "");
+    }, [q]);
 
     const onChangeSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearch(e.target.value);
     };
     const onSubmitSearchInput = () => {
-        if (!search) return;
+        if (!search || q == search) return;
+        console.log("search pushed ", search);
         router.push(`/search?q=${search}`);
     };
     const onKeyPreesed = (e: React.KeyboardEvent<HTMLInputElement>) => {

@@ -1,10 +1,17 @@
 import GlobalLayout from "@/components/global-layout";
 import "@/styles/globals.css";
+import { NextPage } from "next";
 import type { AppProps } from "next/app";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
+import { ReactNode } from "react";
 
-export default function App({ Component, pageProps }: AppProps) {
+
+type PageWithLayout = NextPage & {
+  getLayout?: (page: ReactNode) => ReactNode;
+}
+
+export default function App({ Component, pageProps }: AppProps & {Component: PageWithLayout}) {
 
   const router = useRouter();
   /* prefetching : 컴포넌트가 렌더링 된 직후 해당 컴포넌트에서 이동하는 페이지들을 미리 서버에서 받아오는 것
@@ -16,9 +23,11 @@ export default function App({ Component, pageProps }: AppProps) {
     router.prefetch("/search");
   }, []);
 
+
+  const getLayout = Component.getLayout ?? ((page: ReactNode) => page);
   return <>
     <GlobalLayout>
-      <Component {...pageProps} />
+      {getLayout(<Component {...pageProps} />)}
       </GlobalLayout>
   </>
 }

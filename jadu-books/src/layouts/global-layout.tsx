@@ -6,11 +6,11 @@ export default function GlobalLayout ({children}: {children: ReactNode}) {
         <div className={style.container}>
 
             <header className={style.header}>
-                <h1>This is Header</h1>
+                <h3>자두북스</h3>
             </header>
             
             <main className={style.main}>{children}</main>
-            <footer className={style.footer}><h1>This is Footer</h1></footer>
+            <footer className={style.footer}><p>made by @dev-daeun</p></footer>
         </div>
     )
 }

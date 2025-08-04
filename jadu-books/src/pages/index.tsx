@@ -2,10 +2,12 @@ import { ReactNode } from "react";
 import style from "../styles/index.module.css";
 import SearchableLayout from "@/layouts/search-layout";
 import BookLayout from "@/layouts/book-layout"
-import books from "@/mock/books.json"
 import { InferGetServerSidePropsType } from "next";
+import fetchAllBooks from "@/api/fetch-all-books";
+import fetchRecommendedBooks from "@/api/fetch-recommend-books";
 
-export const getServerSideProps = () => {
+
+export const getServerSideProps = async () => {
   /* SSR (server-side rendering) 에 필요한 data fetching 담당
      컴포넌트 함수보다 먼저 실행됨
      nexjs 서버에서만 실행됨 (브라우저에서 실행 x)
@@ -19,27 +21,26 @@ export const getServerSideProps = () => {
       => 컴포넌트 함수 내에서는 기본적으로 브라우저와 관련된 객체/속성 접근 불가
          (접근하려면 useEffect() 내부에서 접근 가능)
   */
-
-  const data = "hello";
+  const [allBooks, recommendedBooks] = await Promise.all([fetchAllBooks(), fetchRecommendedBooks()])
   return {
     props: {
-      data,
+      allBooks,
+      recommendedBooks,
     }
   }
 };
 
 
-export default function Home({ data }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  console.log(data);
+export default function Home({ allBooks, recommendedBooks }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
     <div className={style.container}>
       <section>
         <h3>지금 추천하는 도서</h3>
-        {books.map((book) => <BookLayout key={book.id} {...book}/>)}
+        {recommendedBooks.map((book) => <BookLayout key={book.id} {...book}/>)}
       </section>
       <section>
         <h3>등록된 모든 도서</h3>
-        {books.map((book) => <BookLayout key={book.id} {...book}/>)}
+        {allBooks.map((book) => <BookLayout key={book.id} {...book}/>)}
       </section>
       
     </div>
